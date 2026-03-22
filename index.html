@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ahmed Tarek Zaher — .NET Backend Developer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  /* ===== CSS VARIABLES ===== */
+  :root {
+    --bg: #0b0c0f;
+    --surface: #111318;
+    --surface2: #181b22;
+    --border: #1f2330;
+    --accent: #00e5a0;
+    --accent2: #0096ff;
+    --accent3: #ff6b35;
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --muted2: #9ca3af;
+    --nav-blur-bg: rgba(11,12,15,0.9);
+    --photo-glow: rgba(0,229,160,0.15);
+  }
+
+  body.light-mode {
+    --bg: #f4f5f7;
+    --surface: #ffffff;
+    --surface2: #eaecf0;
+    --border: #d1d5db;
+    --accent: #00a572;
+    --accent2: #0070cc;
+    --accent3: #e05520;
+    --text: #0f1117;
+    --muted: #6b7280;
+    --muted2: #374151;
+    --nav-blur-bg: rgba(244,245,247,0.92);
+    --photo-glow: rgba(0,165,114,0.12);
+  }
+
+  body.light-mode .hero-grid-bg {
+    background-image:
+      linear-gradient(rgba(0,165,114,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,165,114,0.06) 1px, transparent 1px);
+  }
+  body.light-mode .hero-glow {
+    background: radial-gradient(circle, rgba(0,165,114,0.1) 0%, transparent 70%);
+  }
+  body.light-mode .hero-glow2 {
+    background: radial-gradient(circle, rgba(0,112,204,0.08) 0%, transparent 70%);
+  }
+
+  /* ===== RESET ===== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    overflow-x: hidden;
+    cursor: none;
+    transition: background 0.3s, color 0.3s;
+  }
+
+  /* ===== CUSTOM CURSOR ===== */
+  .cursor {
+    width: 12px; height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.15s ease;
+    mix-blend-mode: difference;
+  }
+  .cursor-follower {
+    width: 36px; height: 36px;
+    border: 1px solid rgba(0,229,160,0.3);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+  }
+
+  /* ===== NOISE OVERLAY ===== */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9990;
+    opacity: 0.4;
+  }
+
+  /* ===== NAVBAR ===== */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 60px;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.3s, background 0.3s;
+  }
+  nav.scrolled {
+    background: var(--nav-blur-bg);
+    backdrop-filter: blur(12px);
+    border-color: var(--border);
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+  }
+  .nav-links {
+    display: flex;
+    gap: 36px;
+    list-style: none;
+    align-items: center;
+  }
+  .nav-links a {
+    color: var(--muted2);
+    text-decoration: none;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* Theme toggle */
+  .theme-toggle {
+    width: 44px; height: 24px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 2px;
+    transition: background 0.3s, border-color 0.3s;
+    flex-shrink: 0;
+  }
+  .theme-toggle:hover { border-color: var(--accent); }
+  .toggle-knob {
+    width: 18px; height: 18px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+    transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
+  }
+  body.light-mode .toggle-knob { transform: translateX(20px); }
+
+  /* ===== HERO ===== */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 60px;
+    padding: 0 80px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-grid-bg {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,160,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,160,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    animation: grid-drift 20s linear infinite;
+  }
+  @keyframes grid-drift {
+    0%   { transform: translate(0,0); }
+    100% { transform: translate(60px, 60px); }
+  }
+  .hero-glow {
+    position: absolute;
+    width: 600px; height: 600px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,229,160,0.08) 0%, transparent 70%);
+    top: 50%; left: 50%; transform: translate(-50%,-50%);
+    pointer-events: none;
+  }
+  .hero-glow2 {
+    position: absolute;
+    width: 400px; height: 400px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,150,255,0.06) 0%, transparent 70%);
+    top: 30%; right: 10%;
+    pointer-events: none;
+  }
+  .hero-content {
+    position: relative; z-index: 2;
+    max-width: 700px;
+  }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 14px;
+    border: 1px solid rgba(0,229,160,0.3); border-radius: 100px;
+    font-size: 11px; color: var(--accent);
+    letter-spacing: 0.15em; text-transform: uppercase;
+    margin-bottom: 32px;
+    animation: fadeInUp 0.8s ease forwards; opacity: 0;
+  }
+  .hero-tag .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 2s ease infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .hero-name {
+    font-family: 'Syne', sans-serif; font-weight: 800;
+    font-size: clamp(48px, 7vw, 88px);
+    line-height: 0.95; letter-spacing: -3px; color: var(--text);
+    animation: fadeInUp 0.8s 0.1s ease forwards; opacity: 0;
+  }
+  .hero-name .accent { color: var(--accent); }
+  .hero-role {
+    font-family: 'Instrument Serif', serif; font-style: italic;
+    font-size: clamp(18px, 2.5vw, 30px); color: var(--muted2);
+    margin-top: 16px;
+    animation: fadeInUp 0.8s 0.2s ease forwards; opacity: 0;
+  }
+  .hero-desc {
+    max-width: 520px; font-size: 13px; line-height: 1.8; color: var(--muted);
+    margin-top: 24px;
+    animation: fadeInUp 0.8s 0.3s ease forwards; opacity: 0;
+  }
+  .hero-cta {
+    display: flex; gap: 16px; margin-top: 36px; flex-wrap: wrap;
+    animation: fadeInUp 0.8s 0.4s ease forwards; opacity: 0;
+  }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 13px 26px; background: var(--accent); color: #000;
+    text-decoration: none; font-size: 13px; font-weight: 500;
+    letter-spacing: 0.05em; border-radius: 4px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    font-family: 'DM Mono', monospace;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,229,160,0.25); }
+  .btn-outline {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 13px 26px; border: 1px solid var(--border); color: var(--muted2);
+    text-decoration: none; font-size: 13px;
+    letter-spacing: 0.05em; border-radius: 4px;
+    transition: border-color 0.2s, color 0.2s;
+    font-family: 'DM Mono', monospace;
+  }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+  .hero-stats {
+    display: flex; gap: 40px; margin-top: 56px; padding-top: 40px;
+    border-top: 1px solid var(--border);
+    animation: fadeInUp 0.8s 0.5s ease forwards; opacity: 0;
+    flex-wrap: wrap;
+  }
+  .stat-value { font-family:'Syne',sans-serif; font-weight:700; font-size:28px; color:var(--text); }
+  .stat-value span { color: var(--accent); }
+  .stat-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; margin-top:4px; }
+
+  .hero-scroll-hint {
+    position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    color: var(--muted); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    animation: fadeIn 1s 1s ease forwards; opacity: 0;
+  }
+  .scroll-line {
+    width: 1px; height: 48px;
+    background: linear-gradient(to bottom, var(--accent), transparent);
+    animation: scrollLine 2s ease infinite;
+  }
+  @keyframes scrollLine { 0%{height:0;opacity:1} 100%{height:48px;opacity:0} }
+  @keyframes fadeInUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes fadeIn { to{opacity:1} }
+
+  /* ===== HERO PHOTO ===== */
+  .hero-photo-wrap {
+    position: relative; z-index: 2; flex-shrink: 0;
+    animation: fadeInUp 0.9s 0.35s ease forwards; opacity: 0;
+  }
+  .hero-photo-ring {
+    width: 320px; height: 320px; border-radius: 50%;
+    padding: 4px;
+    background: conic-gradient(var(--accent), var(--accent2), var(--accent3), var(--accent));
+    box-shadow: 0 0 60px var(--photo-glow);
+  }
+  @keyframes spin-ring { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+  .hero-photo-inner {
+    width: 100%; height: 100%; border-radius: 50%; overflow: hidden;
+    background: var(--surface2); border: 3px solid var(--bg);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .hero-photo-inner img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+  .avatar-placeholder {
+    width:100%; height:100%;
+    display:flex; align-items:center; justify-content:center;
+    background: linear-gradient(135deg, var(--surface2), var(--surface));
+    font-size: 100px; user-select: none;
+  }
+  .hero-photo-badge {
+    position: absolute; bottom: 12px; right: 12px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 100px;
+    padding: 8px 16px; font-size: 12px; color: var(--accent);
+    display: flex; align-items: center; gap: 6px;
+    backdrop-filter: blur(8px); white-space: nowrap;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+
+  /* ===== SECTIONS ===== */
+  section { padding: 100px 60px; }
+  .section-label {
+    font-size: 11px; color: var(--accent);
+    letter-spacing: 0.2em; text-transform: uppercase;
+    display: flex; align-items: center; gap: 12px; margin-bottom: 48px;
+  }
+  .section-label::after {
+    content: ''; flex: 1; max-width: 60px;
+    height: 1px; background: var(--accent); opacity: 0.4;
+  }
+  .section-title {
+    font-family: 'Syne', sans-serif; font-weight: 700;
+    font-size: clamp(30px, 4vw, 50px);
+    letter-spacing: -1.5px; line-height: 1.1; margin-bottom: 16px;
+  }
+
+  /* ===== ABOUT ===== */
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
+  .about-text p { color: var(--muted2); line-height: 1.9; font-size: 14px; margin-bottom: 20px; }
+  .about-text p strong { color: var(--text); }
+  .about-meta { display: flex; flex-direction: column; gap: 14px; }
+  .meta-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 18px; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 8px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .meta-item:hover { border-color: rgba(0,229,160,0.3); }
+  a.meta-link { text-decoration: none; cursor: pointer; justify-content: space-between; }
+  a.meta-link .meta-value { color: var(--text); transition: color 0.2s; }
+  a.meta-link:hover .meta-value { color: var(--accent); }
+  a.meta-link:hover { border-color: rgba(0,229,160,0.3); background: rgba(0,229,160,0.03); }
+  .meta-arrow { color: var(--muted); flex-shrink: 0; transition: transform 0.2s, color 0.2s; }
+  a.meta-link:hover .meta-arrow { color: var(--accent); transform: translate(2px,-2px); }
+  .meta-icon {
+    width: 36px; height: 36px; background: rgba(0,229,160,0.08); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;
+  }
+  .meta-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+  .meta-value { font-size: 13px; color: var(--text); margin-top: 2px; }
+
+  /* ===== SKILLS ===== */
+  .skills-section { background: var(--surface); }
+  .skills-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-top: 48px; }
+  .skill-card {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 12px;
+    padding: 28px; transition: border-color 0.3s, transform 0.3s;
+  }
+  .skill-card:hover { border-color: rgba(0,229,160,0.25); transform: translateY(-4px); }
+  .skill-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .skill-card-icon { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px; }
+  .skill-card-title { font-family: 'Syne', sans-serif; font-weight: 600; font-size: 15px; }
+  .skill-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tag {
+    padding: 5px 12px; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 100px; font-size: 11px; color: var(--muted2); letter-spacing: 0.05em;
+  }
+  .tag.accent { border-color: rgba(0,229,160,0.3); color: var(--accent); background: rgba(0,229,160,0.05); }
+
+  /* ===== PROJECTS ===== */
+  .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 24px; margin-top: 48px; }
+  .project-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+    padding: 32px; position: relative; overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s;
+    display: flex; flex-direction: column;
+  }
+  .project-card:hover { border-color: rgba(0,229,160,0.25); transform: translateY(-6px); }
+  .project-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .project-card:hover::before { opacity: 1; }
+
+  .project-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 4px; font-size: 10px;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 20px; width: fit-content;
+  }
+  .badge-hackathon { background: rgba(255,107,53,0.1); color: var(--accent3); border: 1px solid rgba(255,107,53,0.2); }
+  .badge-api       { background: rgba(0,150,255,0.1);  color: var(--accent2); border: 1px solid rgba(0,150,255,0.2); }
+  .badge-web       { background: rgba(0,229,160,0.08); color: var(--accent);  border: 1px solid rgba(0,229,160,0.2); }
+  .badge-frontend  { background: rgba(168,85,247,0.1); color: #c084fc;        border: 1px solid rgba(168,85,247,0.25); }
+
+  .project-title { font-family:'Syne',sans-serif; font-weight:700; font-size:22px; letter-spacing:-0.5px; margin-bottom:12px; }
+  .project-desc  { font-size:13px; line-height:1.8; color:var(--muted); flex:1; margin-bottom:20px; }
+  .project-metrics {
+    display: flex; gap: 20px; padding: 16px 0;
+    border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-bottom: 20px;
+  }
+  .metric { display: flex; flex-direction: column; gap: 2px; }
+  .metric-val { font-family:'Syne',sans-serif; font-weight:700; font-size:18px; color:var(--accent); }
+  .metric-label { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; }
+  .project-stack { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:20px; }
+  .stack-tag { padding:3px 10px; background:var(--surface2); border-radius:4px; font-size:11px; color:var(--muted2); }
+  .project-links { display:flex; gap:12px; }
+  .project-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: var(--muted2); text-decoration: none; font-size: 12px; transition: color 0.2s;
+  }
+  .project-link:hover { color: var(--accent); }
+  .project-live { color: var(--accent2) !important; }
+  .project-live:hover { color: var(--accent) !important; }
+
+  /* TechMeter featured (2-col) */
+  .project-card.featured {
+    grid-column: 1 / -1;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center;
+  }
+  .project-card.featured .project-visual {
+    background: linear-gradient(135deg, rgba(0,229,160,0.05), rgba(0,150,255,0.05));
+    border: 1px solid var(--border); border-radius: 12px;
+    height: 200px; display: flex; align-items: center; justify-content: center;
+    font-size: 64px; position: relative; overflow: hidden;
+  }
+  .project-card.featured .project-visual::before {
+    content: ''; position: absolute; inset: 0;
+    background:
+      linear-gradient(rgba(0,229,160,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,160,0.03) 1px, transparent 1px);
+    background-size: 30px 30px;
+  }
+
+  /* Nike Store full-width */
+  .nike-featured {
+    grid-column: 1 / -1;
+    display: grid; grid-template-columns: 380px 1fr; gap: 40px; align-items: stretch;
+  }
+  .nike-info { display: flex; flex-direction: column; }
+  .nike-info .project-desc { flex: 1; }
+  .nike-preview {
+    border: 1px solid var(--border); border-radius: 12px;
+    overflow: hidden; display: flex; flex-direction: column;
+    min-height: 380px; background: var(--surface2);
+  }
+  .browser-bar {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; background: var(--surface2); border-bottom: 1px solid var(--border); flex-shrink: 0;
+  }
+  .browser-dots { display: flex; gap: 6px; }
+  .browser-dots span { width:10px; height:10px; border-radius:50%; display:block; }
+  .browser-url {
+    flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+    padding: 4px 10px; font-size: 11px; color: var(--muted);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .browser-open { color: var(--muted); display: flex; align-items: center; text-decoration: none; transition: color 0.2s; }
+  .browser-open:hover { color: var(--accent); }
+  .iframe-wrap { flex: 1; position: relative; overflow: hidden; }
+  .iframe-wrap iframe { width:100%; height:100%; min-height:340px; border:none; display:block; }
+  .iframe-overlay { position:absolute; inset:0; z-index:2; cursor:pointer; }
+
+  /* ===== EXPERIENCE ===== */
+  .experience-section { background: var(--surface); }
+  .timeline { position: relative; padding-left: 40px; margin-top: 48px; }
+  .timeline::before {
+    content: ''; position: absolute; left: 8px; top: 0; bottom: 0;
+    width: 1px; background: linear-gradient(to bottom, var(--accent), transparent);
+  }
+  .timeline-item { position: relative; padding-bottom: 48px; }
+  .timeline-item::before {
+    content: ''; position: absolute; left: -36px; top: 6px;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--accent); box-shadow: 0 0 0 3px rgba(0,229,160,0.15);
+  }
+  .timeline-period { font-size:11px; color:var(--accent); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:8px; }
+  .timeline-title  { font-family:'Syne',sans-serif; font-weight:700; font-size:20px; margin-bottom:4px; }
+  .timeline-org    { font-size:13px; color:var(--muted2); margin-bottom:16px; }
+  .timeline-points { list-style:none; display:flex; flex-direction:column; gap:8px; }
+  .timeline-points li { font-size:13px; color:var(--muted); line-height:1.7; display:flex; gap:10px; }
+  .timeline-points li::before { content:'->'; color:var(--accent); flex-shrink:0; }
+
+  /* ITI mini project card */
+  .iti-project-card {
+    display: flex; align-items: center; gap: 14px;
+    margin-top: 20px; padding: 14px 16px;
+    background: var(--bg); border: 1px solid var(--border); border-radius: 12px;
+    text-decoration: none; color: var(--text);
+    transition: border-color 0.25s, transform 0.25s, background 0.25s;
+    overflow: hidden;
+  }
+  .iti-project-card:hover {
+    border-color: #c084fc; background: rgba(168,85,247,0.04); transform: translateY(-2px);
+  }
+  .iti-project-thumb {
+    width: 88px; height: 60px; border-radius: 7px; overflow: hidden;
+    border: 1px solid var(--border); flex-shrink: 0; background: var(--surface2); position: relative;
+  }
+  .iti-project-thumb iframe {
+    width: 400%; height: 400%; border: none;
+    transform: scale(0.25); transform-origin: top left; pointer-events: none;
+  }
+  .iti-project-info { flex: 1; min-width: 0; }
+  .iti-project-label { font-size:10px; color:#c084fc; text-transform:uppercase; letter-spacing:0.12em; margin-bottom:3px; }
+  .iti-project-name  { font-family:'Syne',sans-serif; font-weight:700; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .iti-project-sub   { font-size:11px; color:var(--muted); margin-top:2px; }
+  .iti-project-arrow { color:var(--muted); flex-shrink:0; transition:transform 0.2s, color 0.2s; }
+  .iti-project-card:hover .iti-project-arrow { color:#c084fc; transform:translate(3px,-3px); }
+
+  /* ===== CONTACT ===== */
+  .contact-inner { max-width: 700px; margin: 0 auto; text-align: center; }
+  .contact-title {
+    font-family: 'Instrument Serif', serif; font-style: italic;
+    font-size: clamp(36px, 5vw, 72px); line-height: 1.1; margin-bottom: 20px;
+  }
+  .contact-desc  { font-size:14px; color:var(--muted); line-height:1.8; margin-bottom:48px; }
+  .contact-links { display:flex; justify-content:center; gap:16px; flex-wrap:wrap; }
+  .contact-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 16px 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    text-decoration: none; color: var(--muted2); font-size: 13px;
+    transition: border-color 0.2s, color 0.2s, transform 0.2s;
+  }
+  .contact-item:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-3px); }
+
+  /* ===== FOOTER ===== */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 60px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  footer .logo { font-family:'Syne',sans-serif; font-weight:700; font-size:16px; color:var(--accent); }
+  footer p { font-size:12px; color:var(--muted); }
+
+  /* ===== SCROLL REVEAL ===== */
+  .reveal { opacity:0; transform:translateY(30px); transition:opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity:1; transform:translateY(0); }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 1100px) {
+    .hero { padding: 0 40px; gap: 40px; }
+    .hero-photo-ring { width: 260px; height: 260px; }
+  }
+  @media (max-width: 768px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    section { padding: 70px 24px; }
+    .hero { padding: 80px 24px 60px; flex-direction: column-reverse; justify-content: center; gap: 36px; text-align: center; }
+    .hero-tag { margin: 0 auto 24px; }
+    .hero-cta { justify-content: center; }
+    .hero-stats { gap: 20px; justify-content: center; }
+    .hero-photo-ring { width: 220px; height: 220px; }
+    .about-grid { grid-template-columns: 1fr; gap: 40px; }
+    .project-card.featured { grid-column: auto; display: flex; flex-direction: column; }
+    .nike-featured { grid-template-columns: 1fr; }
+    .nike-preview { min-height: 280px; }
+    .iframe-wrap iframe { min-height: 240px; }
+    footer { padding: 24px; flex-direction: column; gap: 12px; text-align: center; }
+    .hero-name { letter-spacing: -2px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-follower" id="follower"></div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-logo">ATZ</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li>
+      <div class="theme-toggle" id="themeToggle" title="Toggle light/dark mode">
+        <div class="toggle-knob" id="toggleKnob">&#127769;</div>
+      </div>
+    </li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+
+  <div class="hero-content">
+    <div class="hero-tag">
+      <div class="dot"></div>
+      Available for opportunities
+    </div>
+    <h1 class="hero-name">Ahmed<br><span class="accent">Tarek</span><br>Zaher</h1>
+    <p class="hero-role">.NET Backend Developer &amp; Software Engineer</p>
+    <p class="hero-desc">Building scalable systems, clean APIs, and maintainable architectures. Passionate about design patterns, performance optimization, and mentoring the next generation of developers.</p>
+    <div class="hero-cta">
+      <a href="#projects" class="btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        View Projects
+      </a>
+      <a href="mailto:ahmedtarek7580@gmail.com" class="btn-outline">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+        Get in Touch
+      </a>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <div class="stat-value">3.7<span>/4</span></div>
+        <div class="stat-label">GPA at Zagazig Univ.</div>
+      </div>
+      <div>
+        <div class="stat-value">10K<span>+</span></div>
+        <div class="stat-label">Daily API Requests</div>
+      </div>
+      <div>
+        <div class="stat-value">40<span>%</span></div>
+        <div class="stat-label">Checkout Speed Boost</div>
+      </div>
+      <div>
+        <div class="stat-value">10<span>+</span></div>
+        <div class="stat-label">Sessions Led at ICPC</div>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="hero-photo-wrap">
+    <div class="hero-photo-ring">
+      <div class="hero-photo-inner">
+        <img src="img/ME.jpg" alt="Ahmed Tarek Zaher"> 
+      </div>
+    </div>
+    <div class="hero-photo-badge">
+      <div class="dot"></div>
+      Open to work
+    </div>
+  </div>
+
+  <div class="hero-scroll-hint">
+    <div class="scroll-line"></div>
+    Scroll
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-label">00 — About</div>
+  <div class="about-grid">
+    <div class="about-text reveal">
+      <h2 class="section-title">Crafting<br>backend systems<br>that <em style="color:var(--accent);font-family:'Instrument Serif',serif;">scale.</em></h2>
+      <p style="margin-top:24px;">I'm an aspiring <strong>.NET Backend Developer</strong> currently pursuing my Computer Science degree at Zagazig University, maintaining a 3.7 GPA. I focus on building robust, maintainable server-side systems using modern architectural patterns.</p>
+      <p>My work spans RESTful APIs, real-time applications, and full-stack platforms — always with an eye toward clean code, performance, and scalability. I enjoy the intersection of engineering and mentorship, regularly leading technical sessions and guiding junior developers.</p>
+      <p>When I'm not building, I'm competing — from the <strong>ECPC</strong> to the <strong>NASA Space Apps Cairo Hackathon</strong>, I thrive on hard problems and collaborative solutions.</p>
+    </div>
+    <div class="about-meta reveal" style="transition-delay:0.15s">
+      <div class="meta-item">
+        <div class="meta-icon">&#127891;</div>
+        <div>
+          <div class="meta-label">Education</div>
+          <div class="meta-value">Zagazig University — CS &amp; IT</div>
+        </div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-icon">&#128205;</div>
+        <div>
+          <div class="meta-label">Location</div>
+          <div class="meta-value">Egypt</div>
+        </div>
+      </div>
+      <a href="mailto:ahmedtarek7580@gmail.com" class="meta-item meta-link">
+        <div class="meta-icon">&#128231;</div>
+        <div>
+          <div class="meta-label">Email</div>
+          <div class="meta-value">ahmedtarek7580@gmail.com</div>
+        </div>
+        <svg class="meta-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+      </a>
+      <a href="https://linkedin.com/in/ahmed-zaher" target="_blank" class="meta-item meta-link">
+        <div class="meta-icon">&#128188;</div>
+        <div>
+          <div class="meta-label">LinkedIn</div>
+          <div class="meta-value">linkedin.com/in/ahmed-zaher</div>
+        </div>
+        <svg class="meta-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+      </a>
+      <a href="https://github.com/ahmed-tarek-2004" target="_blank" class="meta-item meta-link">
+        <div class="meta-icon">&#128025;</div>
+        <div>
+          <div class="meta-label">GitHub</div>
+          <div class="meta-value">github.com/ahmed-tarek-2004</div>
+        </div>
+        <svg class="meta-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+      </a>
+      <div class="meta-item">
+        <div class="meta-icon">&#128222;</div>
+        <div>
+          <div class="meta-label">Phone</div>
+          <div class="meta-value">+20 115 890 5589</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills" class="skills-section">
+  <div class="section-label">01 — Skills</div>
+  <h2 class="section-title reveal">Technical<br>Expertise</h2>
+  <div class="skills-container">
+    <div class="skill-card reveal">
+      <div class="skill-card-header">
+        <div class="skill-card-icon" style="background:rgba(0,229,160,0.08);">&#9881;&#65039;</div>
+        <div class="skill-card-title">Backend Development</div>
+      </div>
+      <div class="skill-tags">
+        <span class="tag accent">ASP.NET Core</span>
+        <span class="tag accent">Web API</span>
+        <span class="tag accent">EF Core</span>
+        <span class="tag">LINQ</span>
+        <span class="tag">SignalR</span>
+        <span class="tag">MVC</span>
+        <span class="tag">Unit Testing</span>
+      </div>
+    </div>
+    <div class="skill-card reveal" style="transition-delay:0.1s">
+      <div class="skill-card-header">
+        <div class="skill-card-icon" style="background:rgba(0,150,255,0.08);">&#128452;&#65039;</div>
+        <div class="skill-card-title">Languages &amp; Databases</div>
+      </div>
+      <div class="skill-tags">
+        <span class="tag accent">C#</span>
+        <span class="tag">SQL</span>
+        <span class="tag">Java</span>
+        <span class="tag">Python</span>
+        <span class="tag">C/C++</span>
+        <span class="tag">SQL Server</span>
+        <span class="tag">Redis</span>
+      </div>
+    </div>
+    <div class="skill-card reveal" style="transition-delay:0.2s">
+      <div class="skill-card-header">
+        <div class="skill-card-icon" style="background:rgba(255,107,53,0.08);">&#127959;&#65039;</div>
+        <div class="skill-card-title">Architecture &amp; Patterns</div>
+      </div>
+      <div class="skill-tags">
+        <span class="tag accent">Clean Architecture</span>
+        <span class="tag">N-Tier</span>
+        <span class="tag">CQRS</span>
+        <span class="tag">Unit of Work</span>
+        <span class="tag">SOLID</span>
+        <span class="tag">Design Patterns</span>
+      </div>
+    </div>
+    <div class="skill-card reveal" style="transition-delay:0.3s">
+      <div class="skill-card-header">
+        <div class="skill-card-icon" style="background:rgba(0,229,160,0.08);">&#128295;</div>
+        <div class="skill-card-title">Tools &amp; Platforms</div>
+      </div>
+      <div class="skill-tags">
+        <span class="tag accent">Docker</span>
+        <span class="tag">Git</span>
+        <span class="tag">GitHub</span>
+        <span class="tag">Google Cloud</span>
+        <span class="tag">Visual Studio</span>
+        <span class="tag">VS Code</span>
+      </div>
+    </div>
+    <div class="skill-card reveal" style="transition-delay:0.35s">
+      <div class="skill-card-header">
+        <div class="skill-card-icon" style="background:rgba(0,150,255,0.08);">&#127758;</div>
+        <div class="skill-card-title">Frontend</div>
+      </div>
+      <div class="skill-tags">
+        <span class="tag">HTML</span>
+        <span class="tag">CSS</span>
+        <span class="tag">JavaScript</span>
+        <span class="tag">Bootstrap</span>
+        <span class="tag">React.js</span>
+      </div>
+    </div>
+    <div class="skill-card reveal" style="transition-delay:0.4s">
+      <div class="skill-card-header">
+        <div class="skill-card-icon" style="background:rgba(255,107,53,0.08);">&#129504;</div>
+        <div class="skill-card-title">CS Foundations &amp; Soft Skills</div>
+      </div>
+      <div class="skill-tags">
+        <span class="tag">OOP</span>
+        <span class="tag">DSA</span>
+        <span class="tag">OS &amp; Networks</span>
+        <span class="tag">ML (in progress)</span>
+        <span class="tag accent">Mentorship</span>
+        <span class="tag accent">Problem-Solving</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-label">02 — Projects</div>
+  <h2 class="section-title reveal">What I've<br>Built</h2>
+
+  <div class="projects-grid">
+
+    <!-- TechMeter — 2-col featured -->
+    <div class="project-card featured reveal">
+      <div>
+        <div class="project-badge badge-api">&#9889; API Platform</div>
+        <h3 class="project-title">TechMeter API</h3>
+        <p class="project-desc">A multi-provider online learning platform where instructors can publish courses and learners can enroll, track progress, and earn certifications. Built with a clean, scalable RESTful API supporting multiple course providers on a single platform.</p>
+        <div class="project-metrics">
+          <div class="metric"><div class="metric-val">Multi</div><div class="metric-label">Providers</div></div>
+          <div class="metric"><div class="metric-val">REST</div><div class="metric-label">Architecture</div></div>
+          <div class="metric"><div class="metric-val">Clean</div><div class="metric-label">Architecture</div></div>
+        </div>
+        <div class="project-stack">
+          <span class="stack-tag">ASP.NET Core</span>
+          <span class="stack-tag">EF Core</span>
+          <span class="stack-tag">SQL Server</span>
+          <span class="stack-tag">Clean Architecture</span>
+          <span class="stack-tag">JWT Auth</span>
+        </div>
+        <div class="project-links">
+          <a href="https://github.com/ahmed-tarek-2004/TechMeter" class="project-link" target="_blank">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+            View on GitHub
+          </a>
+        </div>
+      </div>
+      <div class="project-visual">&#128218;</div>
+    </div>
+
+    <!-- Space Market -->
+    <div class="project-card reveal">
+      <div class="project-badge badge-hackathon">&#128640; NASA Hackathon</div>
+      <h3 class="project-title">Space Market</h3>
+      <p class="project-desc">A marketplace connecting satellite service providers with researchers leveraging LEO (Low Earth Orbit) data. Built in a hackathon setting with real-time orbital tracking and containerized deployment.</p>
+      <div class="project-metrics">
+        <div class="metric"><div class="metric-val">100+</div><div class="metric-label">Users Served</div></div>
+        <div class="metric"><div class="metric-val">-20%</div><div class="metric-label">Latency Drop</div></div>
+      </div>
+      <div class="project-stack">
+        <span class="stack-tag">ASP.NET Core</span>
+        <span class="stack-tag">EF Core</span>
+        <span class="stack-tag">SignalR</span>
+        <span class="stack-tag">Docker</span>
+      </div>
+      <div class="project-links">
+        <a href="https://github.com/ahmed-tarek-2004/SpaceMarket" class="project-link" target="_blank">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          GitHub
+        </a>
+      </div>
+    </div>
+
+    <!-- NZWalks -->
+    <div class="project-card reveal" style="transition-delay:0.1s">
+      <div class="project-badge badge-api">&#128268; REST API</div>
+      <h3 class="project-title">NZWalks API</h3>
+      <p class="project-desc">A production-grade RESTful API delivering trail data and analytics across New Zealand. Optimized for high throughput with Redis caching and multi-version deployment support.</p>
+      <div class="project-metrics">
+        <div class="metric"><div class="metric-val">10K+</div><div class="metric-label">Daily Requests</div></div>
+        <div class="metric"><div class="metric-val">+25%</div><div class="metric-label">Faster Response</div></div>
+      </div>
+      <div class="project-stack">
+        <span class="stack-tag">ASP.NET API</span>
+        <span class="stack-tag">EF Core</span>
+        <span class="stack-tag">Redis</span>
+        <span class="stack-tag">API Versioning</span>
+      </div>
+      <div class="project-links">
+        <a href="https://github.com/ahmed-tarek-2004/NZWalks" class="project-link" target="_blank">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          GitHub
+        </a>
+      </div>
+    </div>
+
+    <!-- Bulky Web -->
+    <div class="project-card reveal" style="transition-delay:0.2s">
+      <div class="project-badge badge-web">&#128722; E-Commerce</div>
+      <h3 class="project-title">Bulky Web</h3>
+      <p class="project-desc">A full-featured book e-commerce platform using N-Tier architecture. Features Stripe payment integration, ASP.NET Identity with role-based access control, and highly optimized EF Core queries.</p>
+      <div class="project-metrics">
+        <div class="metric"><div class="metric-val">-40%</div><div class="metric-label">Checkout Time</div></div>
+        <div class="metric"><div class="metric-val">Stripe</div><div class="metric-label">Payments</div></div>
+      </div>
+      <div class="project-stack">
+        <span class="stack-tag">ASP.NET MVC</span>
+        <span class="stack-tag">EF Core</span>
+        <span class="stack-tag">Stripe</span>
+        <span class="stack-tag">Identity</span>
+        <span class="stack-tag">N-Tier</span>
+      </div>
+      <div class="project-links">
+        <a href="https://github.com/ahmed-tarek-2004/Bulky_Web_MVC" class="project-link" target="_blank">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          GitHub
+        </a>
+      </div>
+    </div>
+
+    <!-- Nike Store — FULL WIDTH with live preview -->
+    <div class="project-card nike-featured reveal" style="transition-delay:0.1s">
+      <div class="nike-info">
+        <div class="project-badge badge-frontend">&#128095; Frontend</div>
+        <h3 class="project-title">Nike Store</h3>
+        <p class="project-desc">A fully responsive e-commerce front-end for Nike products. Built with pure HTML, CSS, and JavaScript — no frameworks. Features smooth animations, mobile-first layout, and a 30% improvement in mobile load time. Final project at ITI internship — scored 95%.</p>
+        <div class="project-metrics">
+          <div class="metric"><div class="metric-val">-30%</div><div class="metric-label">Mobile Load Time</div></div>
+          <div class="metric"><div class="metric-val">95%</div><div class="metric-label">ITI Score</div></div>
+          <div class="metric"><div class="metric-val">Live</div><div class="metric-label">Deployed</div></div>
+        </div>
+        <div class="project-stack">
+          <span class="stack-tag">HTML</span>
+          <span class="stack-tag">CSS</span>
+          <span class="stack-tag">JavaScript</span>
+          <span class="stack-tag">Bootstrap</span>
+          <span class="stack-tag">Responsive</span>
+        </div>
+        <div class="project-links">
+          <a href="https://github.com/ahmed-tarek-2004/Nike_Store" class="project-link" target="_blank">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+            GitHub
+          </a>
+          <a href="https://ahmed-tarek-2004.github.io/Nike_Store" class="project-link project-live" target="_blank">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            Live Demo
+          </a>
+        </div>
+      </div>
+      <div class="nike-preview">
+        <div class="browser-bar">
+          <div class="browser-dots">
+            <span style="background:#ff5f57"></span>
+            <span style="background:#febc2e"></span>
+            <span style="background:#28c840"></span>
+          </div>
+          <div class="browser-url">ahmed-tarek-2004.github.io/Nike_Store</div>
+          <a href="https://ahmed-tarek-2004.github.io/Nike_Store" target="_blank" class="browser-open" title="Open in new tab">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+        </div>
+        <div class="iframe-wrap">
+          <iframe src="https://ahmed-tarek-2004.github.io/Nike_Store" title="Nike Store Preview" loading="lazy" scrolling="yes"></iframe>
+          <a href="https://ahmed-tarek-2004.github.io/Nike_Store" class="iframe-overlay" target="_blank" title="Open Nike Store"></a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience" class="experience-section">
+  <div class="section-label">03 — Experience</div>
+  <h2 class="section-title reveal">Where I've<br>Contributed</h2>
+
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:60px; margin-top:48px; align-items:start;">
+
+    <div class="timeline reveal">
+      <div class="timeline-item">
+        <div class="timeline-period">Aug 2024 – Sep 2024</div>
+        <div class="timeline-title">Front-End Development Intern</div>
+        <div class="timeline-org">Information Technology Institute (ITI) — Remote</div>
+        <ul class="timeline-points">
+          <li>Completed 60+ hours of practical training in HTML, CSS, JavaScript, and Bootstrap.</li>
+          <li>Scored 95% on the final project evaluation.</li>
+          <li>Developed a responsive e-commerce site (Nike Store), improving mobile load time by 30%.</li>
+        </ul>
+        <a href="https://ahmed-tarek-2004.github.io/Nike_Store" target="_blank" class="iti-project-card">
+          <div class="iti-project-thumb">
+            <iframe src="https://ahmed-tarek-2004.github.io/Nike_Store" scrolling="no" tabindex="-1"></iframe>
+          </div>
+          <div class="iti-project-info">
+            <div class="iti-project-label">Final Project</div>
+            <div class="iti-project-name">&#128095; Nike Store</div>
+            <div class="iti-project-sub">HTML &middot; CSS &middot; JS &middot; Bootstrap</div>
+          </div>
+          <svg class="iti-project-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="timeline reveal" style="transition-delay:0.15s">
+      <div class="timeline-item">
+        <div class="timeline-period">2024 – Present</div>
+        <div class="timeline-title">Technical Lead</div>
+        <div class="timeline-org">ICPC Zagazig Community</div>
+        <ul class="timeline-points">
+          <li>Led 10+ technical sessions on algorithms and data structures.</li>
+          <li>Mentored teams preparing for regional programming contests.</li>
+        </ul>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-period">2025</div>
+        <div class="timeline-title">.NET Technical Support</div>
+        <div class="timeline-org">ZagEng Community</div>
+        <ul class="timeline-points">
+          <li>Guided junior .NET developers through real-world backend challenges.</li>
+          <li>Organized workshops on database optimization and API design.</li>
+        </ul>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-period">Sep 2025</div>
+        <div class="timeline-title">Participant — Hackathon</div>
+        <div class="timeline-org">NASA Space Apps Cairo</div>
+        <ul class="timeline-points">
+          <li>Built and deployed a space data management platform in 48 hours.</li>
+          <li>Collaborated across disciplines: engineering, design, and data science.</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-inner reveal">
+    <div class="section-label" style="justify-content:center;">04 — Contact</div>
+    <h2 class="contact-title">Let's build<br>something <em style="color:var(--accent)">great</em><br>together.</h2>
+    <p class="contact-desc">Open to backend development roles, collaboration, or technical discussions. Whether you have a project in mind or just want to connect — I'd love to hear from you.</p>
+    <div class="contact-links">
+      <a href="mailto:ahmedtarek7580@gmail.com" class="contact-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+        Email Me
+      </a>
+      <a href="https://linkedin.com/in/ahmed-zaher" class="contact-item" target="_blank">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+        LinkedIn
+      </a>
+      <a href="https://github.com/ahmed-tarek-2004" class="contact-item" target="_blank">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+        GitHub
+      </a>
+      <a href="tel:+201158905589" class="contact-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 8.91a16 16 0 0 0 6 6l.81-.81a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        +20 115 890 5589
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="logo">ATZ</div>
+  <p>&copy; 2026 Ahmed Tarek Zaher &mdash; Built with passion &amp; clean code.</p>
+</footer>
+
+<script>
+  // ===== CURSOR =====
+  const cursor   = document.getElementById('cursor');
+  const follower = document.getElementById('follower');
+  let mouseX = 0, mouseY = 0, followerX = 0, followerY = 0;
+
+  document.addEventListener('mousemove', e => {
+    mouseX = e.clientX; mouseY = e.clientY;
+    cursor.style.left = mouseX - 6 + 'px';
+    cursor.style.top  = mouseY - 6 + 'px';
+  });
+
+  (function animateFollower() {
+    followerX += (mouseX - followerX - 18) * 0.12;
+    followerY += (mouseY - followerY - 18) * 0.12;
+    follower.style.left = followerX + 'px';
+    follower.style.top  = followerY + 'px';
+    requestAnimationFrame(animateFollower);
+  })();
+
+  document.querySelectorAll('a, button, .theme-toggle').forEach(el => {
+    el.addEventListener('mouseenter', () => cursor.style.transform = 'scale(2.5)');
+    el.addEventListener('mouseleave', () => cursor.style.transform = 'scale(1)');
+  });
+
+  // ===== NAVBAR =====
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+  });
+
+  // ===== THEME TOGGLE =====
+  const themeToggle = document.getElementById('themeToggle');
+  const toggleKnob  = document.getElementById('toggleKnob');
+  let isLight = localStorage.getItem('theme') === 'light';
+
+  function applyTheme() {
+    document.body.classList.toggle('light-mode', isLight);
+    toggleKnob.textContent = isLight ? '\u2600\uFE0F' : '\uD83C\uDF19';
+  }
+  applyTheme();
+
+  themeToggle.addEventListener('click', () => {
+    isLight = !isLight;
+    applyTheme();
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+  });
+
+  // ===== SCROLL REVEAL =====
+  const revealObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+</script>
+</body>
+</html>
